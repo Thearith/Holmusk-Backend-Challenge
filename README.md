@@ -82,7 +82,8 @@ The table's name is `food`.
 
 ### Test Stack
 1. [Mocha](https://mochajs.org/), a Node.js test framework
-2. [supertest](https://github.com/visionmedia/supertest), a HTTP assertion library 
+2. [supertest](https://github.com/visionmedia/supertest), a Javascript HTTP Assertion library 
+3. [should](https://shouldjs.github.io/), Javascript Assertion library
 
 
 ## Future improvements
