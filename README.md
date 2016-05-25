@@ -38,7 +38,15 @@ Holmusk Daily's features include:
 3. Run `sails lift` to start the localhost server.  Visit [http://localhost:1337](http://localhost:1337).  (**Note**: The database is hosted on [mongolab](https://mlab.com/home). If you encounter an error while running `sails lift`, please rerun `sails lift` as this is caused by connection problems to mongolab)
 4. Run `npm run seed-search` and wait for a while. This will scrape 2000 foods from [myfitnesspal](https://www.myfitnesspal.com/) and will save all the foods' titles to elasticsearch for future searches. 
 5. There is no need to setup the local database or to seed the database as I have already hosted it on mongolab and seeded the database with scraped food details.
-5. Enjoy Holmusk Daily!
+6. Enjoy Holmusk Daily!
+
+
+## Npm commands
+All npm commands are stored inside `package.json`.
+1. `sails lift` to start the server.
+2. `npm run seed-search` to scrape the food data from myfitnesspal and seed the elasticsearch for future searches.
+3. `npm run scrape` to scrape the food data from myfitnesspal and write to an output file, `foods.json`. The output file is in `/search` folder.
+4. `npm run seed-db` to scrape the food data from myfitnesspal and seed the database hosted in mongolab.
 
 
 ## Tech stacks
