@@ -41,12 +41,14 @@ function initMapping() {
     type: DOCUMENT_TYPE,
     body: {
       properties: {
-        title: { type: "string" },
-        suggest: {
+        title: {
+          type: "string"
+        },
+        title_suggest: {
           type: "completion",
           analyzer: "simple",
           search_analyzer: "simple",
-          payloads: true
+          payloads: false
         }
       }
     }
@@ -64,9 +66,9 @@ function addFood(food) {
     index: INDEX_NAME,
     type: DOCUMENT_TYPE,
     body: {
-      title: food.title,
-      suggest: {
-        input: food.title.split(" "),
+      title: food.title.replace(/[^a-zA-Z ]/g, "").split(" "),
+      title_suggest: {
+        input: food.title,
         output: food.id + "\\" + food.title
       }
     }
@@ -87,9 +89,8 @@ function getSuggestions(input) {
       foodsSuggested: {
         text: input,
         completion: {
-          field: "suggest",
-          size: "10",
-          fuzzy: true
+          field: "title_suggest",
+          size: "10"
         }
       }
     }
