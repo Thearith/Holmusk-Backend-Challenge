@@ -41,7 +41,7 @@ Holmusk Daily's features include:
     "query": {
         "match_all": {}
     }
-}```
+}```.
 This will return a list of 2000 foods.
 5. There is no need to setup the local database or to seed the database as I have already hosted it on mongolab and seeded the database with scraped food details.
 6. Enjoy Holmusk Daily!
