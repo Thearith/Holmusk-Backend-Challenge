@@ -43,6 +43,7 @@ Holmusk Daily's features include:
 
 ## Npm commands
 All npm commands are stored inside `package.json`.
+
 1. `sails lift` to start the server.
 2. `npm run seed-search` to scrape the food data from myfitnesspal and seed the elasticsearch for future searches.
 3. `npm run scrape` to scrape the food data from myfitnesspal and write to an output file, `foods.json`. The output file is in `/search` folder.
