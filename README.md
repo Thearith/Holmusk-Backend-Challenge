@@ -35,6 +35,8 @@ Holmusk Daily's features include:
 
 1. Clone this project by `git clone git@github.com:Thearith/Holmusk-Backend-Challenge.git`. After that, run `npm install` to install all npm libraries and dependencies.
 2. Download [Elasticsearch](https://www.elastic.co/downloads/elasticsearch). Unzip the folder and run `bin/elasticsearch` to run the elasticsearch server on your machine.
-3. Run `sails lift` to start the localhost server. Visit [http://localhost:1337/](http://localhost:1337/). (Note: The database is hosted on [mongolab](https://mlab.com/home). If you encounter an error while running `sails lift`, please rerun `sails lift` a few times as this is caused by connection problems to mongolab)
+3. Run `sails lift` to start the localhost server.  Visit [http://localhost:1337](http://localhost:1337).  (**Note**: The database is hosted on [mongolab](https://mlab.com/home). If you encounter an error while running `sails lift`, please rerun `sails lift` as this is caused by connection problems to mongolab)
+4. Run `npm run seed-search` and wait for a while. This will scrape 2000 foods from [myfitnesspal](https://www.myfitnesspal.com/) and will save all the foods' titles to elasticsearch for future searches. There is no need to seed the hosted database as I have already seeded the database.
+5. Enjoy Holmusk Daily!
 
 
