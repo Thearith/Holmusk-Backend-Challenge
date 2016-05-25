@@ -12,6 +12,10 @@ module.exports = {
       type: 'string'
     },
 
+    hashCode: {
+      type: 'integer'
+    },
+
     link: {
       type: 'string'
     },

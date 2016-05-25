@@ -60,7 +60,7 @@ module.exports = {
   "create": function(req, res) {
     Food.create(req.body)
       .then(function(food) {
-        res.json(200, {food: food});
+        res.json(200, {title: food.title});
         FoodService.addFoodToSearch(food);
       })
       .catch(function(err) {
@@ -89,29 +89,29 @@ module.exports = {
     foods = req.body
     Food.create(foods)
       .then(function(foods) {
-        res.send(200, {msg: foods.length + " foods have been saved to database"})
+        res.send(200, {msg: foods.length + " foods have been saved to database"});
       })
       .catch(function(err) {
         res.json(404, {msg: "Cannot save " + foods.length + " to database", error: err});
       })
   },
 
-  // return food's id by using the food's title
+  // return food's id by using the food's link
   // used to seed elasticsearch
-  "findFoodByTitle": function(req, res) {
-    title = req.params.title;
+  "findFoodByHashCode": function(req, res) {
+    hash = req.params.hash;
 
     Food.findOne({
-      title: title
+      hashCode: hash
     })
     .then(function(food) {
       if(food == undefined || food == null)
-        res.json(404, {msg: 'Food with title ' + title + ' is not found'})
+        res.json(404, {msg: 'Food with hash code ' + hash + ' is not found'})
 
       res.json(200, {id: food.id});
     })
     .catch(function(err) {
-      res.json(404, {msg: 'Food with title ' + title + ' is not found', error: err})
+      res.json(404, {msg: 'Food with hash code ' + hash + ' is not found', error: err})
     })
   }
 

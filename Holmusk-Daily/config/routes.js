@@ -34,7 +34,7 @@ module.exports.routes = {
 
   'GET /search/:q': 'FoodController.suggestFoods',
   'GET /food/:id': 'FoodController.findFood',
-  'GET /foodTitle/:title': 'FoodController.findFoodByTitle',
+  'GET /foodHash/:hash': 'FoodController.findFoodByHashCode',
   'GET /foods': 'FoodController.getAllFoods',
   'POST /foods': 'FoodController.createFoods'
 
