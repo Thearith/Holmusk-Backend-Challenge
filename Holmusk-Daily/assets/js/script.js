@@ -373,6 +373,7 @@ var SearchContainer = React.createClass({
 var ResultContainer = React.createClass({
   render: function() {
     var length = this.props.searchResults.length;
+    var isSwitch = this.props.isSwitch;
     return (
       <div>
         {this.props.isSearch ?
@@ -396,7 +397,7 @@ var ResultContainer = React.createClass({
             this.props.searchResults.map(function(result) {
               return (
                 <Food title={result.title} id={result.id} importantNutrients={IMPORTANT_NUTRIENTS}
-                  otherNutrients={OTHER_NUTRIENTS} />
+                  otherNutrients={OTHER_NUTRIENTS} isSwitch={isSwitch} />
               );
             })
           }
@@ -434,7 +435,7 @@ var Food = React.createClass({
   getInitialState: function() {
     return {
       food: null,
-      pinned: false,
+      pinned: this.props.isSwitch,
       showClickMore: true
     };
   },
@@ -474,17 +475,24 @@ var Food = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    this.setState({
-      showClickMore: true,
-      pinned: false,
-      food: null
-    });
+    if(!this.props.isSwitch) {
+      this.setState({
+        showClickMore: true,
+        food: null
+      });
+    } else {
+      this.getFood(nextProps.id);
+    }
   },
 
   componentDidMount: function() {
     $('.collapsible').collapsible({
       accordion : false
     });
+
+    if(this.props.isSwitch) {
+      this.getFood(this.props.id);
+    }
   },
 
   render: function() {
