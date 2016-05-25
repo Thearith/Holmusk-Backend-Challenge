@@ -58,7 +58,7 @@ Holmusk Daily's features include:
 4. [cheerio](https://github.com/cheeriojs/cheerio) (receive a raw HTMLString and convert it so that we can do DOM traversal using familar JQuery calls)
 
 ### Database
-1. [sails-mongo](https://www.npmjs.com/package/sails-mongo)
+1. [sails-mongo](https://www.npmjs.com/package/sails-mongo) (MongoDB's adapter for Sails)
 
 The MongoDB database is hosted in mongolab. To connect to the database using mongo shell:
 `mongo ds025752.mlab.com:25752/holmusk-daily -u <dbuser> -p <dbpassword>` where dbuser = `holmusk` and dbpassword = `holmusk1234`.
