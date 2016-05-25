@@ -54,10 +54,11 @@ module.exports = {
       id: id
     })
       .then(function(food) {
-        if(food == undefined || food == null)
-          res.json(404, {msg: 'Food with id ' + id + ' is not found'})
-
-        res.json(200, {food: food});
+        if(food == undefined || food == null) {
+          res.json(404, {msg: 'Food with id ' + id + ' is not found'});
+        } else {
+          res.json(200, {food: food});
+        }
       })
       .catch(function(err) {
         res.json(404, {msg: 'Food with id' + id + ' is not found', error: err});
@@ -128,10 +129,11 @@ module.exports = {
       hashCode: hash
     })
     .then(function(food) {
-      if(food == undefined || food == null)
-        res.json(404, {msg: 'Food with hash code ' + hash + ' is not found'})
-
-      res.json(200, {id: food.id});
+      if(food == undefined || food == null) {
+        res.json(404, {msg: 'Food with hash code ' + hash + ' is not found'});
+      } else {
+        res.json(200, {id: food.id});
+      }
     })
     .catch(function(err) {
       res.json(404, {msg: 'Food with hash code ' + hash + ' is not found', error: err})
