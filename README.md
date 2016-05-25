@@ -60,7 +60,8 @@ Holmusk Daily's features include:
 ### Database
 1. [sails-mongo](https://www.npmjs.com/package/sails-mongo)
 
-The MongoDB database is hosted in mongolab. To Connect to the database using mongo shell:
+The MongoDB database is hosted in mongolab. To connect to the database using mongo shell:
+
 `mongo ds025752.mlab.com:25752/holmusk-daily -u <dbuser> -p <dbpassword>` where dbuser = `holmusk` and dbpassword = `holmusk1234`.
 The table's name is `food`.
 
