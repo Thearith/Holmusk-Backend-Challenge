@@ -4,7 +4,7 @@ Holmusk Daily allows you to search for food and their nutrient details in real t
 
 Holmusk Daily's features include:
 
-1. Searching for food and retrieve their nutrient details in real time. Search is empowered by the fast ######elasticsearch server.
+1. Searching for food and retrieve their nutrient details in real time. Search is empowered by the fast `elasticsearch` server.
 2. Pinning your favorite food. Switch toggle to **_on_** to see the list of your favorite food.
 3. Submitting your food to Holmusk Daily.
 
@@ -34,6 +34,7 @@ Holmusk Daily's features include:
 ## Getting Started
 
 1. Clone this project by `git clone git@github.com:Thearith/Holmusk-Backend-Challenge.git`. After that, run `npm install` to install all npm libraries and dependencies.
-2. 
+2. Install [elasticsearch](https://www.elastic.co/downloads/elasticsearch). Unzip the folder and run `bin/elasticsearch` to start the elasticsearch server.
+3. 
 
 
