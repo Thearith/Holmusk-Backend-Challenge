@@ -15,7 +15,7 @@ Holmusk Daily's features include:
 <img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Homepage.png">
 
 
-#### Searching "Fast foods"
+#### Searching _Fast foods_
 <img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Search%20mode.png">
 
 
