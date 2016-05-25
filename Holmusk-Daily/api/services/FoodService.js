@@ -1,4 +1,5 @@
 var elasticsearch = require("../../search/elasticsearch");
+var helper = require("../../helper/helper");
 
 module.exports = {
 
@@ -8,6 +9,10 @@ module.exports = {
 
   "addFoodToSearch": function(food) {
     return elasticsearch.addFood(food);
+  },
+
+  "hashCode": function(title) {
+    return helper.hashCode(title);
   }
 
 }

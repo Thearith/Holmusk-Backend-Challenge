@@ -1,9 +1,10 @@
-// import libraries
+// Import libraries
 var rp = require('request-promise');
 var cheerio = require('cheerio');
 var helper = require('../helper/helper');
 
-// constants
+
+// Constants
 var BASE_URL            = "http://www.myfitnesspal.com";
 var FITNESS_URL         = BASE_URL + "/nutrition-facts-calories/generic/";
 var STARTING_PAGE_INDEX = 1;
@@ -11,13 +12,19 @@ var ENDING_PAGE_INDEX   = 100;
 var TOTAL_FOODS         = 2000;
 var TOTAL_PAGES         = ENDING_PAGE_INDEX - STARTING_PAGE_INDEX + 1;
 
-// variables
+
+// Variables
 var pageTraverseList = [];
 var foodList = [];
 var foodListDetails = [];
 
 var numCrawledPages = 0;
 var numCrawledFoodDetails = 0;
+
+
+
+// Functions
+
 
 /*
 * init
@@ -31,10 +38,10 @@ var init = function() {
 }
 
 
-
 /*
 * Crawl food list from this url, http://www.myfitnesspal.com/nutrition-facts-calories/generic/
-* Output: a list of foods, each of which only contains food title and link to its nutrition details
+* Output: a list of links to individual food's nutrition details
+* callback will be called after traversing through all pages
 */
 
 var crawlFoodList = function(callback, returnCallback) {
@@ -57,13 +64,15 @@ var crawlFoodList = function(callback, returnCallback) {
         .then(function($){
           var foodListPage = $('.food_description');
 
+          // Every page contains many links to individual food details
+          // Scrape every link and save them to a list so that they can be crawled later
+
           foodListPage.each( function(index) {
-            var title, link;
+            var link;
             var json = {ink: "", traversed: false};
 
             var foodBody = $(this).find('a').first();
             link = BASE_URL + foodBody.attr('href');
-            json.title = title;
             json.link = link;
             foodList.push(json);
           })
@@ -91,6 +100,7 @@ var crawlFoodList = function(callback, returnCallback) {
 /*
 * Crawl food details from every food's link
 * Output: a list of foods, each of which contains all food details including title, link, and nutrition details
+* callback will be called after traversing through every food
 */
 
 var crawlFoodDetails = function(callback, returnCallback) {
@@ -155,6 +165,9 @@ var crawlFoodDetails = function(callback, returnCallback) {
           var $foodDetailsRows = $foodDetails.find('tbody tr');
 
           $foodDetailsRows.each(function(index) {
+
+            // crawling food nutrient details
+
             var $rowDetail = $(this).find('td.col-2');
             var firstValue = $($rowDetail[0]).text();
             var secondValue = $($rowDetail[1]).text();
@@ -246,7 +259,9 @@ var crawlFoodDetails = function(callback, returnCallback) {
 
 
 /*
-*   Callbacks
+*  A callback function after crawlFoodList() finishes execution
+*   If some pages have not been crawled due to bad connections,
+*   crawlFoodList() will be called again until all pages have been crawled
 */
 
 var callbackAfterCrawlFoodDetails = function(returnCallback) {
@@ -260,6 +275,14 @@ var callbackAfterCrawlFoodDetails = function(returnCallback) {
   }
 
 }
+
+
+/*
+*  A callback function after crawlFoodDetails() finishes execution
+*   If some foods have not been crawled due to bad connections,
+*   crawlFoodDetails() will be called again until all foods have been crawled
+*/
+
 
 var callbackAfterCrawlFoodList = function(returnCallback) {
   console.log("Number of Pages Crawled: " + numCrawledPages);
@@ -277,7 +300,7 @@ var callbackAfterCrawlFoodList = function(returnCallback) {
 
 /*
 **********************************************************************
-************************** MAIN **************************************
+************************** Export functions **************************
 **********************************************************************
 */
 

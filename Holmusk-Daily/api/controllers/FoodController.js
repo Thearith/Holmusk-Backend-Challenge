@@ -7,8 +7,15 @@
 
 module.exports = {
 
-  // suggest foods based on param search "q"
-  // return a list of ten results, each of which contains a food title and id
+
+  /*******************************************
+  * IMPORTANT API ENDPOINTS
+  ********************************************/
+
+
+  // Suggest foods based on param search "q"
+  // Return a list of ten results, each of which contains a food title and id
+
   "suggestFoods": function(req, res) {
     input = req.params.q;
 
@@ -19,7 +26,7 @@ module.exports = {
 
         results = [];
 
-        // map function usage is better but I don't want to install underscore.js just for this
+        // map() is better but I don't want to install underscore.js just for this
         searchResult.foodsSuggested[0].options.forEach(function(result, index){
           resultText = result.text;
           splits = resultText.split("\\");
@@ -36,40 +43,52 @@ module.exports = {
       })
   },
 
-  // find food based on id
-  // return a single food object
+
+  // Find food based on id
+  // Return a single food object
+
 	"findFood": function(req, res) {
     id = req.params.id;
 
     Food.findOne({
       id: id
     })
-    .then(function(food) {
-      if(food == undefined || food == null)
-        res.json(404, {msg: 'Food with id ' + id + ' is not found'})
+      .then(function(food) {
+        if(food == undefined || food == null)
+          res.json(404, {msg: 'Food with id ' + id + ' is not found'})
 
-      res.json(200, {food: food});
-    })
-    .catch(function(err) {
-      res.json(404, {msg: 'Food with id' + id + ' is not found', error: err});
-    })
+        res.json(200, {food: food});
+      })
+      .catch(function(err) {
+        res.json(404, {msg: 'Food with id' + id + ' is not found', error: err});
+      });
   },
 
-  // overriding create's blueprint method
-  // after adding food to database, add food to elasticsearch as well for future search
+
+  // Overriding create's blueprint method
+  // After adding food to database, add food to elasticsearch as well for future search
+
   "create": function(req, res) {
-    Food.create(req.body)
-      .then(function(food) {
-        res.json(200, {title: food.title});
-        FoodService.addFoodToSearch(food);
+    food = req.body;
+    food.hashCode = FoodService.hashCode(food.title);
+
+    Food.create(food)
+      .then(function(savedFood) {
+        res.json(200, {title: savedFood.title});
+        FoodService.addFoodToSearch(savedFood);
       })
       .catch(function(err) {
         res.json(404, {msg: 'Food cannot be created', error: err});
-      })
-
+      });
   },
 
-  // return all foods in database
+
+  /*******************************************
+  * OPTIONAL API ENDPOINTS
+  ********************************************/
+
+  // Return all foods in database
+
   "getAllFoods": function(req, res) {
     Food.find()
       .then(function(foods) {
@@ -83,8 +102,10 @@ module.exports = {
       })
   },
 
-  // add a lot of foods to database
-  // just to seed dbs with a list of foods
+
+  // Adding an array of foods to database
+  // Used just to seed dbs with a list of foods
+
   "createFoods": function(req, res) {
     foods = req.body
     Food.create(foods)
@@ -96,8 +117,10 @@ module.exports = {
       })
   },
 
-  // return food's id by using the food's link
-  // used to seed elasticsearch
+
+  // Return food's id by using the food's link
+  // Used to seed elasticsearch
+
   "findFoodByHashCode": function(req, res) {
     hash = req.params.hash;
 

@@ -74,6 +74,11 @@ var OTHER_NUTRIENTS = [
 
 /*
 * App component: containing everything
+* contains four state:
+*     query: search query text
+*     filteredData: search or pinned results
+*     isSearch: boolean, if the user is currently searching sth
+*     isSwitch: boolean, if the user is currently toggle mode on (to show his favorite foods)
 */
 
 var App = React.createClass({
@@ -85,6 +90,9 @@ var App = React.createClass({
       isSwitch: false
     }
   },
+
+  // Callback search method, search querytext via SEARCH_URL (elasticsearch)
+  // and pass the results for MainContainer component to populate
 
   doSearch: function(queryText) {
 
@@ -118,6 +126,10 @@ var App = React.createClass({
       }.bind(this)
     });
   },
+
+
+  // Callback switch method, get users' pinned food (stored in localStorage)
+  // and pass the results for MainContainer component to populate
 
   doSwitch: function(val) {
     console.log("switching pls");
@@ -175,8 +187,9 @@ var App = React.createClass({
 });
 
 
+
 /*
-* Navbar component: containing switch, search and a modal trigger button
+* Navbar component: containing Logo, Search, Switch and Modal trigger button
 */
 
 var Navbar = React.createClass({
@@ -206,22 +219,41 @@ var Logo = React.createClass({
   }
 });
 
-var NewFood = React.createClass({
+var Search = React.createClass ({
+  doSearch: function(){
+    var query=this.refs.searchInput.value; // this is the search text
+    this.props.doSearch(query);
+  },
+
+  // remove Enter key from input search
+
+  handleKeyDown: function(e) {
+    var ENTER = 13;
+      if( e.keyCode == ENTER ) {
+        e.preventDefault();
+        return false;
+      }
+  },
+
+  // delay so that it will not always search
+  // only calling for Search callback (passed down from App component) after the user has not keyed anything for 1 second
+
+  handleKeyUp: function(e) {
+    delay(function(){
+
+    }, 1000 );
+  },
+
   render: function() {
     return (
-      <ul id="nav-mobile" className="right hide-on-small-only">
-        <li>
-          <ToggleSwitch doSwitch={this.props.doSwitch} isSearch={this.props.isSearch}/>
-        </li>
-        <li>
-          <div className="new-food right">
-                <a className="modal-trigger" href={"#modal-newfood"}>
-                  <i className="medium material-icons left newfood-icon">add</i>
-                  <span className="newfood-text">CREATE FOOD</span>
-                </a>
-          </div>
-        </li>
-      </ul>
+      <form>
+        <div className="input-field search-outer">
+          <input id="search" type="text" placeholder="Search for foods" ref="searchInput" value={this.props.query} onChange={this.doSearch} onKeyDown={this.handleKeyDown} />
+          <label htmlFor="search">
+            <i className="tiny material-icons search-icon">search</i>
+          </label>
+        </div>
+      </form>
     );
   }
 });
@@ -247,36 +279,22 @@ var ToggleSwitch = React.createClass({
   }
 });
 
-var Search = React.createClass ({
-  doSearch: function(){
-    var query=this.refs.searchInput.value; // this is the search text
-    this.props.doSearch(query);
-  },
-
-  handleKeyDown: function(e) {
-    var ENTER = 13;
-      if( e.keyCode == ENTER ) {
-        e.preventDefault();
-        return false;
-      }
-  },
-
-  handleKeyUp: function(e) {
-    delay(function(){
-
-    }, 1000 );
-  },
-
+var NewFood = React.createClass({
   render: function() {
     return (
-      <form>
-        <div className="input-field search-outer">
-          <input id="search" type="text" placeholder="Search for foods" ref="searchInput" value={this.props.query} onChange={this.doSearch} onKeyDown={this.handleKeyDown} />
-          <label htmlFor="search">
-            <i className="tiny material-icons search-icon">search</i>
-          </label>
-        </div>
-      </form>
+      <ul id="nav-mobile" className="right hide-on-small-only">
+        <li>
+          <ToggleSwitch doSwitch={this.props.doSwitch} isSearch={this.props.isSearch}/>
+        </li>
+        <li>
+          <div className="new-food right">
+                <a className="modal-trigger" href={"#modal-newfood"}>
+                  <i className="medium material-icons left newfood-icon">add</i>
+                  <span className="newfood-text">CREATE FOOD</span>
+                </a>
+          </div>
+        </li>
+      </ul>
     );
   }
 });
@@ -284,7 +302,7 @@ var Search = React.createClass ({
 
 
 /*
-* MainContainer component, containing search food results and pinned foods
+* MainContainer component, containing all Search or Pinned food results which are passed down as props from App component
 */
 
 var MainContainer = React.createClass({
@@ -303,6 +321,9 @@ var MainContainer = React.createClass({
     );
   }
 });
+
+
+// AdBanner component, just showcasing Holmusk and provide a link to Holmusk's facebook page
 
 var AdBanner = React.createClass({
   render: function() {
@@ -335,6 +356,9 @@ var AdBanner = React.createClass({
   }
 });
 
+
+// NoSearchContainer component, appears whenever a user is neither searching or toggle switch on
+
 var NoSearchContainer = React.createClass({
   render: function() {
     return (
@@ -355,6 +379,10 @@ var NoSearchContainer = React.createClass({
   }
 });
 
+
+// SearchContainer, appears whenever a user is either searching or toggle switch on
+// gets all food results from App component
+
 var SearchContainer = React.createClass({
   render: function() {
     return (
@@ -369,6 +397,9 @@ var SearchContainer = React.createClass({
     );
   }
 });
+
+// ResultContainer component, appears when the search results is not empty
+// populates all foods
 
 var ResultContainer = React.createClass({
   render: function() {
@@ -407,6 +438,9 @@ var ResultContainer = React.createClass({
   }
 });
 
+// NoResultContainer component, appears when the search results is empty
+// Show appropriate content to tell users that the search is empty
+
 var NoResultContainer = React.createClass({
   render: function() {
     return (
@@ -430,6 +464,11 @@ var NoResultContainer = React.createClass({
     );
   }
 });
+
+// Food component: showing all Food's information including title, link to fitnesspal page, and all other important nutrients
+//    In Search mode, Food will only make a GET request if the user clicks on "click here to show more"
+//        (so that web app does not lag too much when searching)
+//    In Toggle switch on mode, Food will make a GET request immediately to populate data
 
 var Food = React.createClass({
   getInitialState: function() {
@@ -636,8 +675,9 @@ var Loading = React.createClass({
   }
 });
 
+
 /*
-* Modal: containing a form for user to submit a new food
+* ModalForm container, containing a form for user to submit a new food, make a POST request
 */
 
 var ModalForm = React.createClass({
@@ -911,7 +951,9 @@ var ModalForm = React.createClass({
 });
 
 
-// helper functions
+/*
+* helper functions
+*/
 
 var delay = (function(){
   var timer = 0;
@@ -925,6 +967,10 @@ function checkNotNull(val) {
   return val && val !== undefined && val !== null && val !== '';
 }
 
+
+/**********************************************************************
+* ReactDOM renders App component to a div with element id, "App"
+***********************************************************************/
 
 ReactDOM.render(
   <App />,

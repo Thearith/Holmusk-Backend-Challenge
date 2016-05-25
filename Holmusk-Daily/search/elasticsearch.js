@@ -4,6 +4,8 @@ var INDEX_NAME      = "holmuskdaily";
 var DOCUMENT_TYPE   = "food";
 
 
+// elasticsearch server
+// Must run ./elasticsearch to make connection to elasticsearch server
 
 var elasticClient = new elasticsearch.Client({
   host: 'localhost:9200',
@@ -12,10 +14,11 @@ var elasticClient = new elasticsearch.Client({
 
 
 /********************************************************************
+*
 * CRUD Functions to be exported
 * including deleteIndex, initIndex, indexExists, initMapping
-********************************************************************
-*/
+*
+********************************************************************/
 
 function initIndex() {
   return elasticClient.indices.create({
@@ -34,6 +37,8 @@ function deleteIndex() {
     index: INDEX_NAME
   })
 }
+
+// initMapping, configuration made to be an autocomplete suggester
 
 function initMapping() {
   return elasticClient.indices.putMapping({
@@ -54,6 +59,14 @@ function initMapping() {
     }
   });
 }
+
+
+
+/********************************************************************
+*
+* Important methods including suggestFood() and addFood()
+*
+********************************************************************/
 
 
 /*
@@ -97,6 +110,12 @@ function getSuggestions(input) {
   });
 }
 
+
+/*
+**********************************************************************
+************************** Export functions **************************
+**********************************************************************
+*/
 
 module.exports = {
   initIndex: initIndex,
