@@ -16,7 +16,7 @@ scrape(function(foodsJSON) {
 
   rp(options)
     .then(function(parsedBody){
-      console.log("\n\n" + parsedBody.msg + "\n");
+      console.log("\n" + parsedBody.msg + "\n");
     })
     .catch(function(err) {
       console.log(err);
