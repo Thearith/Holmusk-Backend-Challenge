@@ -19,24 +19,19 @@ Holmusk Daily's features include:
 <img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Search%20mode.png">
 
 
-
-
 #### Toggle switch on: showing a list of pinned foods
 <img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Pin%20mode.png">
-
-
 
 
 #### Food Card
 <img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Food%20Card.png" width="300" style="margin-right: 50px;"><img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Expanded%20Food%20Card.png" width="300">
 
 
-
-
 #### Form Modal
 <img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Form%20Modal.png">
 
 
+## Getting Started
 
 
 
