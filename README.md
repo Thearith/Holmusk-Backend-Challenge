@@ -36,7 +36,13 @@ Holmusk Daily's features include:
 1. Clone this project by `git clone git@github.com:Thearith/Holmusk-Backend-Challenge.git`. After that, run `npm install` to install all npm libraries and dependencies.
 2. Download [Elasticsearch](https://www.elastic.co/downloads/elasticsearch). Unzip the folder and run `bin/elasticsearch` to run the elasticsearch server on your machine.
 3. Run `sails lift` to start the localhost server.  Visit [http://localhost:1337](http://localhost:1337).  (**Note**: The database is hosted on [mongolab](https://mlab.com/home). If you encounter an error while running `sails lift`, please rerun `sails lift` as this is caused by connection problems to mongolab)
-4. Run `npm run seed-search` and wait for a while. This will scrape 2000 foods from [myfitnesspal](https://www.myfitnesspal.com/) and will save all the foods' titles to elasticsearch for future searches. 
+4. Run `npm run seed-search` and wait for a while. This will scrape 2000 foods from [myfitnesspal](https://www.myfitnesspal.com/) and will save all the foods' titles to elasticsearch for future searches. TO test whether elasticsearch contains 2000 entries, use [Postman] to make a POST request to `localhost:9200/holmuskdaily/food/_search?size=2000` with body 
+```{
+    "query": {
+        "match_all": {}
+    }
+}```
+This will return a list of 2000 foods.
 5. There is no need to setup the local database or to seed the database as I have already hosted it on mongolab and seeded the database with scraped food details.
 6. Enjoy Holmusk Daily!
 
@@ -54,20 +60,20 @@ All npm commands are stored inside `package.json`.
 
 
 ### Framework
-1. [Sails.js](http://sailsjs.org/)
+1. [Sails.js](http://sailsjs.org/).
 
 ### Frontend stack
 1. [React.js](https://facebook.github.io/react/)
-2. [Material](http://materializecss.com/) (UI library based on Material Design)
+2. [Material](http://materializecss.com/) (UI library based on Material Design).
 
 ### Stack for web crawling
 1. [request](https://github.com/request/request) (for handling GET and POST requests)
 2. [Bluebird's promise](http://bluebirdjs.com/docs/getting-started.html) (for handling Javascript asynchronous calls)
 3. [request-promise](https://github.com/request/request) (request + promise)
-4. [cheerio](https://github.com/cheeriojs/cheerio) (receive a raw HTMLString and convert it so that we can do DOM traversal using familar JQuery calls)
+4. [cheerio](https://github.com/cheeriojs/cheerio) (receive a raw HTMLString and convert it so that we can do DOM traversal using familar JQuery calls).
 
 ### Database
-1. [sails-mongo](https://www.npmjs.com/package/sails-mongo) (MongoDB's adapter for Sails)
+1. [sails-mongo](https://www.npmjs.com/package/sails-mongo) (Sails Waterline adapter for MongoDB).
 
 The MongoDB database is hosted in mongolab. To connect to the database using mongo shell:
 `mongo ds025752.mlab.com:25752/holmusk-daily -u <dbuser> -p <dbpassword>` where dbuser = `holmusk` and dbpassword = `holmusk1234`.
