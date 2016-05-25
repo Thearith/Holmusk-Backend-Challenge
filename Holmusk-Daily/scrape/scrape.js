@@ -1,14 +1,12 @@
 // import libraries
 var rp = require('request-promise');
 var cheerio = require('cheerio');
-
+var helper = require('../helper/helper');
 
 // constants
 var BASE_URL            = "http://www.myfitnesspal.com";
 var FITNESS_URL         = BASE_URL + "/nutrition-facts-calories/generic/";
 var STARTING_PAGE_INDEX = 1;
-// var ENDING_PAGE_INDEX   = 9545;
-// var TOTAL_FOODS         = 190899;
 var ENDING_PAGE_INDEX   = 100;
 var TOTAL_FOODS         = 2000;
 var TOTAL_PAGES         = ENDING_PAGE_INDEX - STARTING_PAGE_INDEX + 1;
@@ -61,10 +59,9 @@ var crawlFoodList = function(callback, returnCallback) {
 
           foodListPage.each( function(index) {
             var title, link;
-            var json = {title: "", link: "", traversed: false};
+            var json = {ink: "", traversed: false};
 
             var foodBody = $(this).find('a').first();
-            title = foodBody.text();
             link = BASE_URL + foodBody.attr('href');
             json.title = title;
             json.link = link;
@@ -139,7 +136,6 @@ var crawlFoodDetails = function(callback, returnCallback) {
         iron: ""
       };
 
-      title = food.title;
       link = food.link;
 
       var options = {
@@ -152,6 +148,8 @@ var crawlFoodDetails = function(callback, returnCallback) {
       rp(options)
         .then(function($){
           serving = $('select#food_entry_weight_id').find(":selected").text();
+          mainTitle = $('h1.main-title').text();
+          title = mainTitle.substring(13); // for example, mainTitle = "Calories in Pork rice" after scraping, title will only get "Pork rice"
 
           var $foodDetails = $('table#nutrition-facts').first();
           var $foodDetailsRows = $foodDetails.find('tbody tr');
@@ -201,6 +199,7 @@ var crawlFoodDetails = function(callback, returnCallback) {
 
           json.link = link;
           json.title = title;
+          json.hashCode = helper.hashCode(title);
           json.serving = serving;
           json.calories = calories;
           json.sodium = sodium;
@@ -286,7 +285,7 @@ module.exports = function(returnCallback) {
 
   console.log("--------------------------------------------------------\n");
   console.log("Crawling food from this website, " + FITNESS_URL + "\n");
-  console.log("--------------------------------------------------------\n\n");
+  console.log("--------------------------------------------------------\n");
   console.log("Currently crawling food from " + ENDING_PAGE_INDEX + " pages");
 
   init();
