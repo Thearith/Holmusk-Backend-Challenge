@@ -33,6 +33,7 @@ Holmusk Daily's features include:
 
 ## Getting Started
 
-
+1. Clone this project by `git clone git@github.com:Thearith/Holmusk-Backend-Challenge.git`. After that, run `npm install` to install all npm libraries and dependencies.
+2. 
 
 
