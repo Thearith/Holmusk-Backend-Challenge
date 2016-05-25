@@ -75,7 +75,7 @@ The table's name is `food`.
 
 
 ## Future improvements
-1. Currently elasticsearch can do **Prefix Query** (for example, when we search `Food`, elasticsearch only return titles starting with `Food`. Titles such as `Fast Food` will be ignored). We can do partial word autocomplete using NGrams tokenizer.
-2. If the frontend gets more complicated, setup [Webpack](https://webpack.github.io/) and [Webpack's Hot reload](https://webpack.github.io/docs/hot-module-replacement.html). Install babel, css-loader (for private scope css), etc for good React's practices.
+1. Currently elasticsearch can do **Prefix Query** (for example, when we search `Food`, elasticsearch only return titles starting with `Food`. Titles such as `Fast Food` will be ignored). We can improve it by implementing **Partial Word Autocomplete** using NGrams.
+2. If the frontend gets more complicated, setup [Webpack](https://webpack.github.io/) and [Webpack's Hot reload](https://webpack.github.io/docs/hot-module-replacement.html). Install babel, css-loader (for private scope css), etc for good React practices.
 
 
