@@ -56,7 +56,7 @@ All npm commands are stored inside `package.json`.
 4. `npm run seed-db` to scrape the food data from myfitnesspal and seed the database hosted in mongolab.
 
 
-## Tech stacks
+## Tech stack
 
 
 ### Framework
@@ -66,7 +66,7 @@ All npm commands are stored inside `package.json`.
 1. [React.js](https://facebook.github.io/react/)
 2. [Material](http://materializecss.com/) (UI library based on Material Design).
 
-### Stack for web crawling
+### Web crawling stack
 1. [request](https://github.com/request/request) (for handling GET and POST requests)
 2. [Bluebird's promise](http://bluebirdjs.com/docs/getting-started.html) (for handling Javascript asynchronous calls)
 3. [request-promise](https://github.com/request/request) (request + promise)
