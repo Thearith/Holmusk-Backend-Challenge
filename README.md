@@ -12,4 +12,4 @@ Holmusk Daily's features include:
 ## Screenshots
 
 #### Homepage
-<img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Homepage.png" width="400">
+<img src="https://github.com/Thearith/Holmusk-Backend-Challenge/blob/master/Screenshot/Homepage.png" width="600">
