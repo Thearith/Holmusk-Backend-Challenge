@@ -68,7 +68,7 @@ All npm commands are stored inside `package.json`.
 2. [Material](http://materializecss.com/), UI library based on Material Design.
 
 ### Web crawling stack
-1. [request](https://github.com/request/request), for handling GET and POST requests
+1. [request](https://github.com/request/request), for making GET and POST requests
 2. [Bluebird's promise](http://bluebirdjs.com/docs/getting-started.html), for handling Javascript asynchronous calls
 3. [request-promise](https://github.com/request/request), request + promise
 4. [cheerio](https://github.com/cheeriojs/cheerio), receive a raw HTMLString and convert it so that we can do DOM traversal using familar JQuery calls.
