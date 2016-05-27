@@ -8,7 +8,7 @@ var DOCUMENT_TYPE   = "food";
 // Must run ./elasticsearch to make connection to elasticsearch server
 
 var elasticClient = new elasticsearch.Client({
-  host: 'localhost:9200',
+  host: 'http://48db4e2ec44c80f9b51b2143072862b6.ap-southeast-1.aws.found.io:9200',
   log: 'info'
 });
 

@@ -1,5 +1,5 @@
 // constants
-var HOLMUSK_DAILY_BASE_URL      = "http://localhost:1337";
+var HOLMUSK_DAILY_BASE_URL      = "http://holmusk-daily-63927.onmodulus.net";
 var HOLMUSK_DAILY_URL           = HOLMUSK_DAILY_BASE_URL;
 var SEARCH_URL                  = HOLMUSK_DAILY_BASE_URL + "/search/";
 var GET_FOOD_ENDPOINT           = HOLMUSK_DAILY_BASE_URL + "/food/";
@@ -211,7 +211,7 @@ var Navbar = React.createClass({
 var Logo = React.createClass({
   render: function() {
     return (
-      <a href="http://localhost:1337" className="brand-logo logo-align hide-on-med-and-down">
+      <a href={HOLMUSK_DAILY_URL} className="brand-logo logo-align hide-on-med-and-down">
         <img src={"/images/logo-white.png"} id="logo" />
         <h3 className="logo-header"> Holmusk Daily </h3>
       </a>
