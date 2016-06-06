@@ -280,6 +280,11 @@ input[type="text"]#search {
   text-shadow: none;
 }
 
+.fb-iconsmall img {
+  padding-top: 2px;
+  padding-left: 3px;
+}
+
 .searchInfoContainer {
   display: flex;
   flex-direction: column;
