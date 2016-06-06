@@ -29,7 +29,17 @@ module.exports.connections = {
   *                                                                          *
   ***************************************************************************/
   localDiskDb: {
-    adapter: 'sails-disk'
+    adapter: 'sails-disk',
+    user: 'root',
+    host: 'localhost',
+    database: 'development'
+  },
+
+  testingDiskDb: {
+    adapter: 'sails-disk',
+    user: 'root',
+    host: 'localhost',
+    database: 'testing'
   },
 
   /***************************************************************************
