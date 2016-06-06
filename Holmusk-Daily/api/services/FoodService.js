@@ -1,18 +1,8 @@
-var elasticsearch = require("../../search/elasticsearch");
-var helper = require("../../helper/helper");
+import ElasticSearchModule from "../../search/elasticSearch";
+import getHashCode from "../../helper/helper";
 
 module.exports = {
-
-  "suggestFoods": function(input) {
-    return elasticsearch.getSuggestions(input);
-  },
-
-  "addFoodToSearch": function(food) {
-    return elasticsearch.addFood(food);
-  },
-
-  "hashCode": function(title) {
-    return helper.hashCode(title);
-  }
-
-}
+  suggestFoods: input => ElasticSearchModule.getSuggestions(input),
+  addFoodToSearch: food => ElasticSearchModule.addFood(food),
+  hashCode: title => getHashCode(title)
+};
