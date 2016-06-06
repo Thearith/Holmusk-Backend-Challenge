@@ -1,14 +1,19 @@
-var elasticsearch = require('elasticsearch');
+import ElasticSearch from 'elasticsearch';
 
-var INDEX_NAME      = "holmuskdaily";
-var DOCUMENT_TYPE   = "food";
-
+const INDEX_NAME          = 'holmuskdaily';
+const DOCUMENT_TYPE       = 'food';
+const ELASTIC_CLIENT_URL  = 'http://48db4e2ec44c80f9b51b2143072862b6.ap-southeast-1.aws.found.io:9200';
+const LOCALHOST           = 'localhost:1992';
 
 // elasticsearch server
 // Must run ./elasticsearch to make connection to elasticsearch server
 
-var elasticClient = new elasticsearch.Client({
-  host: 'http://48db4e2ec44c80f9b51b2143072862b6.ap-southeast-1.aws.found.io:9200',
+const elasticUrl = process.env.NODE_ENV === 'production'
+  ? ELASTIC_CLIENT_URL
+  : LOCALHOST;
+
+const elasticClient = new ElasticSearch.Client({
+  host: elasticUrl,
   log: 'info'
 });
 
@@ -111,17 +116,19 @@ function getSuggestions(input) {
 }
 
 
-/*
-**********************************************************************
-************************** Export functions **************************
-**********************************************************************
-*/
 
-module.exports = {
-  initIndex: initIndex,
+//////////////////////////////////////////////////////////////////
+/////////         EXPORT MODULE        ///////////////////////////
+//////////////////////////////////////////////////////////////////
+
+
+const ElasticSearchModule = {
+  initIndex : initIndex,
   indexExists: indexExists,
   deleteIndex: deleteIndex,
   initMapping: initMapping,
   addFood: addFood,
   getSuggestions: getSuggestions
 };
+
+export default ElasticSearchModule;
