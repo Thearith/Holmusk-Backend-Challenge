@@ -34,3 +34,4 @@ node_modules
 
 Holmusk-Daily/scrape/foods.json
 .DS_STORE
+Holmusk-Daily/assets/js/bundle.js
