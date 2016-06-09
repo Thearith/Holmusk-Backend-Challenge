@@ -5,6 +5,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+require('dotenv').config();
+
 module.exports = {
 
 
@@ -17,7 +19,7 @@ module.exports = {
   // Return a list of ten results, each of which contains a food title and id
 
   suggestFoods: (req, res) => {
-    const input = req.params.q;
+    const input = req.param('q');
 
     FoodService.suggestFoods(input)
       .then((searchResult) => {
@@ -26,13 +28,11 @@ module.exports = {
         } else {
           searchResult = searchResult.foodsSuggested[0].options
             .map(result => result.text)
-            .map((result) => {
-              const splits = result.split("\\");
-              return {
-                id: splits[0],
-                title: splits[1]
-              };
-            });
+            .map(text => text.split('\\'))
+            .map(splits => ({
+              id: splits[0],
+              title: splits[1]
+            }));
 
           res.json(200, {
             length: searchResult.length,
@@ -82,12 +82,16 @@ module.exports = {
 
     Food.create(food)
       .then((savedFood) => {
-        res.json(200, { title: savedFood.title });
-        FoodService.addFoodToSearch(savedFood);
+
+        FoodService.addFoodToSearch(savedFood)
+          .then(() => {
+            res.json(200, { title: savedFood.title });
+          })
+          .catch(err => console.log(err));
       })
       .catch((err) => {
         res.json(404, {
-          msg: 'Food cannot be created',
+          msg: `Food with title ${food.title} cannot be created`,
           error: err
         });
       });
@@ -122,11 +126,17 @@ module.exports = {
 
   createFoods: (req, res) => {
     const foods = req.body;
+
     Food.create(foods)
       .then((foods) => {
-        res.send(200, {
-          msg: `${foods.length} foods have been saved to database`
-        });
+
+        FoodService.addFoodsToSearch(foods)
+          .then(() => {
+            res.send(200, {
+              msg: `${foods.length} foods have been saved to Database and ElasticSearch`
+            });
+          })
+          .catch(err => console.log(err));
       })
       .catch((err) => {
         res.json(404, {
@@ -141,7 +151,7 @@ module.exports = {
   // Used to seed elasticsearch
 
   findFoodByHashCode: (req, res) => {
-    hash = req.param('hash');
+    const hash = req.param('hash');
 
     Food.findOne({
       hashCode: hash
@@ -163,6 +173,30 @@ module.exports = {
         error: err
       });
     })
+  },
+
+
+  // Initialize food in Database and ElasticSearch
+  // Secured for only Admin users
+
+  initializeFoods: (req, res) => {
+    const userId = req.param('user');
+    const password = req.param('password');
+
+    if(userId === process.env['ADMIN']
+      && password === process.env['PASSWORD']) {
+
+      Food.destroy()
+        .then(() => FoodService.initializeElasticSearch())
+        .then(() => res.send(200, {
+          msg: 'All food in Database and ElasticSearch has been initialized.'
+        }))
+        .catch(err => console.log(err));
+
+    } else {
+      res.send({ error: 'Wrong authentication' });
+    }
+
   }
 
 };

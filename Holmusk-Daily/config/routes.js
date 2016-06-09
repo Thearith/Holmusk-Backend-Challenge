@@ -36,6 +36,7 @@ module.exports.routes = {
   'GET /food/:id': 'FoodController.findFood',
   'GET /foodHash/:hash': 'FoodController.findFoodByHashCode',
   'GET /foods': 'FoodController.getAllFoods',
-  'POST /foods': 'FoodController.createFoods'
+  'POST /foods': 'FoodController.createFoods',
+  'POST /initFoods': 'FoodController.initializeFoods'
 
 };
