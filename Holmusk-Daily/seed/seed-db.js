@@ -1,50 +1,83 @@
-/*******************************************************************************
-*
-* Purpose of this file is to scrape a number of foods (default: 2000 foods)
-* from fitnesspal and store them in the database using POST request
-*
-*******************************************************************************/
-
-// Import libraries
 import RequestPromise from 'request-promise';
-import scrapeFoods from '../scrape/scrape.js';
+
 
 // Constants
 const LOCALHOST               = 'http://localhost:1337';
-const HOSTED_URL              = 'http://holmusk-daily-63927.onmodulus.net/';
+const HOSTED_URL              = 'http://holmusk-daily-63927.onmodulus.net';
 const POSTING_ENDPOINT        = '/foods';
+const DELETING_ENDPOINT       = '/initFoods';
 
+const foodPostUrl = process.env.NODE_ENV === 'production'
+  ? HOSTED_URL + POSTING_ENDPOINT
+  : LOCALHOST + POSTING_ENDPOINT;
+
+const deleteFoodsUrl = process.env.NODE_ENV === 'production'
+  ? HOSTED_URL + DELETING_ENDPOINT
+  : LOCALHOST + DELETING_ENDPOINT;
+
+
+
+// Delete all foods in database
+
+function initializeFoodsInDatabase() {
+  const userId = process.env['ADMIN'];
+  const password = process.env['PASSWORD'];
+
+  return new Promise((resolve, reject) => {
+    const options = {
+      method: 'POST',
+      uri: deleteFoodsUrl,
+      body: {
+        user: userId,
+        password: password
+      },
+      json: true
+    };
+
+    RequestPromise(options)
+      .then((res) => {
+        if(res.error) {
+          reject(res.error);
+        } else {
+          console.log('\n' + res.msg);
+          resolve();
+        }
+      })
+      .catch(err => reject(err));
+  })
+}
+
+
+// Post foods
+
+function postFoods(foods) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      method: 'POST',
+      uri: foodPostUrl,
+      body: foods,
+      json: true
+    };
+
+    RequestPromise(options)
+      .then((res) => {
+        console.log(res.msg);
+        resolve();
+      })
+      .catch(err => reject(err));
+  });
+}
 
 
 /*
 **********************************************************************
-************************** Export functions **************************
+************************** Export module *****************************
 **********************************************************************
 */
 
+const SeedDB = {
+  initializeFoodsInDatabase,
+  postFoods
+};
 
-// First, scrape foods using scrape.js which will return a list of foods, foodsJSON
-// After that, make a POST request to store foodsJSON
-
-const url = process.env.NODE_ENV === 'production'
-  ? HOSTED_URL + POSTING_ENDPOINT
-  : LOCALHOST + POSTING_ENDPOINT;
-
-export default function seedDatabase() {
-  scrapeFoods()
-    .then((foodsJSON) => {
-      const options = {
-        method: 'POST',
-        uri: url,
-        body: foodsJSON,
-        json: true
-      };
-
-      RequestPromise(options)
-        .then((parsedBody) => console.log("\n" + parsedBody.msg + "\n"))
-        .catch(err => reject(err));
-    })
-    .catch(err => console.log(err));
-}
-
-seedDatabase();
+export default SeedDB;
