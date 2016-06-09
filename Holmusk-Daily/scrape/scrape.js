@@ -3,17 +3,12 @@ import RequestPromise from 'request-promise';
 import Promise from 'bluebird';
 import cheerio from 'cheerio';
 
-import getHashCode from '../helper/helper';
+import getHashCode from "../helper/helper";
 
 
 // Constants
-const BASE_URL            = "http://www.myfitnesspal.com";
-const FITNESS_URL         = BASE_URL + "/nutrition-facts-calories/generic/";
-const STARTING_PAGE_INDEX = 1;
-const ENDING_PAGE_INDEX   = 100;
-const TOTAL_FOODS         = 2000;
-const TOTAL_PAGES         = ENDING_PAGE_INDEX - STARTING_PAGE_INDEX + 1;
-
+const BASE_URL            = 'http://www.myfitnesspal.com';
+const FITNESS_URL         = BASE_URL + '/nutrition-facts-calories/generic/';
 
 
 /*
@@ -21,6 +16,24 @@ const TOTAL_PAGES         = ENDING_PAGE_INDEX - STARTING_PAGE_INDEX + 1;
 * Output: a list of links to individual food's nutrition details
 *
 */
+
+function getFoodLinks(startPage, endPage) {
+  const totalPages = endPage - startPage + 1;
+  let pagesList = Array.from({length: totalPages}, (v,i) => FITNESS_URL + (startPage + i));
+
+  console.log(`\nCurrently crawling food from ${totalPages} pages\n`);
+
+  return new Promise((resolve, reject) => {
+    Promise
+      .all(pagesList.map(pageUrl => getFoodLinksFromPage(pageUrl)))
+      .then((foodLinks) => {
+        foodLinks = foodLinks.reduce((list, links) => list.concat(links));
+        resolve(foodLinks);
+      })
+      .catch(err => reject(err));
+  });
+
+}
 
 
 function getFoodLinksFromPage(pageUrl) {
@@ -45,36 +58,29 @@ function getFoodLinksFromPage(pageUrl) {
 
         resolve(foodLinks);
       })
-      .catch((err) => {
-        //TODO: redo if failed
-        resolve([]);
-      })
+      .catch(err => retryPromise(() => getFoodLinksFromPage(pageUrl), resolve, pageUrl));
   });
-
 }
 
-function getFoodLinks() {
-  console.log("Currently crawling food from " + ENDING_PAGE_INDEX + " pages");
-
-  let pagesList = Array.from({length: TOTAL_PAGES}, (v,i) => FITNESS_URL + (i+1));
-
-  return new Promise((resolve, reject) => {
-    Promise
-      .all(pagesList.map(pageUrl => getFoodLinksFromPage(pageUrl)))
-      .then((foodLinks) => {
-        foodLinks = foodLinks.reduce((list, links) => list.concat(links));
-        resolve(foodLinks);
-      })
-      .catch((err) => reject(err));
-  });
-
-}
 
 
 /*
 * Crawl food details from every food's link
 * Output: a list of foods, each of which contains all food details including title, link, and nutrition details
 */
+
+function getFoods(foodLinks) {
+  console.log(`\n\nCurrently crawling food details from ${foodLinks.length} pages\n`);
+
+  return new Promise((resolve, reject) => {
+    Promise
+      .all(foodLinks.map(foodLink => getFood(foodLink)))
+      .then((foods) => {
+        resolve(foods);
+      })
+      .catch(err => reject(err));
+  });
+}
 
 
 function getFood(link) {
@@ -103,7 +109,7 @@ function getFood(link) {
         // scrape the food facts and details
         const $foodDetailsRows = $('table#nutrition-facts').first().find('tbody tr');
         const $foodTitle = $('h1.main-title');
-        const $foodServing = $('select#food_entry_weight_id').find(":selected");
+        const $foodServing = $('select#food_entry_weight_id').find(':selected');
 
         title = $foodTitle.text().substring(13).trim();
         hashCode = getHashCode(title);
@@ -166,8 +172,8 @@ function getFood(link) {
 
         const json = {
           title,
-          link,
           hashCode,
+          link,
           serving,
           calories,
           totalFat,
@@ -191,28 +197,27 @@ function getFood(link) {
         resolve(json);
 
       })
-      .catch((err) => {
-        //TODO: redo if failed
-        resolve(null);
-      })
+      .catch(err => retryPromise(() => getFood(link), resolve, link));
 
   });
 
 }
 
-function getFoods(foodLinks) {
-  console.log("\nCurrently crawling food details from " + TOTAL_FOODS + " pages");
 
-  return new Promise((resolve, reject) => {
-    Promise
-      .all(foodLinks.map(foodLink => getFood(foodLink)))
-      .then((foods) => {
-        resolve(foods);
-      })
-      .catch(err => reject(err));
-  });
+
+/*
+*  Helper function
+*  Retry promise function until it is successful
+*/
+
+function retryPromise(fn, resolve, link) {
+  return fn()
+    .then((obj) => {
+      console.log(`-->\tRefectched this link, ${link}`);
+      resolve(obj);
+    })
+    .catch(err => retryPromise(fn, resolve, link));
 }
-
 
 
 /*
@@ -221,13 +226,13 @@ function getFoods(foodLinks) {
 **********************************************************************
 */
 
-export default function scrapeFoods() {
-  console.log("--------------------------------------------------------\n");
-  console.log("Crawling food from this website, " + FITNESS_URL + "\n");
-  console.log("--------------------------------------------------------\n");
+function scrapeFoods(startPage, endPage) {
+  console.log('--------------------------------------------------------\n');
+  console.log(`Crawling food from this website, ${FITNESS_URL} \n`);
+  console.log('--------------------------------------------------------\n');
 
   return new Promise((resolve, reject) => {
-    getFoodLinks()
+    getFoodLinks(startPage, endPage)
       .then(foodLinks => getFoods(foodLinks))
       .then(foods => resolve(foods))
       .catch(err => reject(err));
@@ -235,310 +240,8 @@ export default function scrapeFoods() {
 
 }
 
-
-
-// // Variables
-// var pageTraverseList = [];
-// var foodList = [];
-// var foodListDetails = [];
-
-// var numCrawledPages = 0;
-// var numCrawledFoodDetails = 0;
-
-
-
-// // Functions
-
-
-
-// /*
-// * init
-// */
-
-// var init = function() {
-//   for(page_id = STARTING_PAGE_INDEX; page_id <= ENDING_PAGE_INDEX; page_id++) {
-//     page = {id: page_id, traversed: false};
-//     pageTraverseList.push(page);
-//   }
-// }
-
-
-// /*
-// * Crawl food list from this url, http://www.myfitnesspal.com/nutrition-facts-calories/generic/
-// * Output: a list of links to individual food's nutrition details
-// * callback will be called after traversing through all pages
-// */
-
-// var crawlFoodList = function(callback, returnCallback) {
-//   var count = 0;
-//   var numPagesNeedToCrawl = TOTAL_PAGES - numCrawledPages;
-
-//   pageTraverseList.forEach(function(page, page_id) {
-
-//     if(!pageTraverseList[page_id].traversed) {
-
-//       var url = FITNESS_URL + page_id;
-//       var options = {
-//         uri: url,
-//         transform: function (body) {
-//           return cheerio.load(body);
-//         }
-//       };
-
-//       rp(options)
-//         .then(function($){
-//           var foodListPage = $('.food_description');
-
-//           // Every page contains many links to individual food details
-//           // Scrape every link and save them to a list so that they can be crawled later
-
-//           foodListPage.each( function(index) {
-//             var link;
-//             var json = {ink: "", traversed: false};
-
-//             var foodBody = $(this).find('a').first();
-//             link = BASE_URL + foodBody.attr('href');
-//             json.link = link;
-//             foodList.push(json);
-//           })
-
-//           pageTraverseList[page_id].traversed = true;
-//           numCrawledPages++;
-
-//           count++;
-//           if(count > numPagesNeedToCrawl - 1) {
-//             callback(returnCallback);
-//           }
-
-//         })
-//         .catch(function(err) {
-//           count++;
-//           if(count > numPagesNeedToCrawl - 1) {
-//             callback(returnCallback);
-//           }
-//         });
-//     }
-//   })
-// }
-
-
-// /*
-// * Crawl food details from every food's link
-// * Output: a list of foods, each of which contains all food details including title, link, and nutrition details
-// * callback will be called after traversing through every food
-// */
-
-// var crawlFoodDetails = function(callback, returnCallback) {
-//   var count = 0;
-//   var numFoodNeededToCrawl = TOTAL_FOODS - numCrawledFoodDetails;
-
-//   foodList.forEach(function(food, i) {
-
-//     if(!foodList[i].traversed) {
-
-//       var title, link,
-//         serving,
-//         calories, sodium,
-//         totalFat, potassium,
-//         saturated, totalCarbs,
-//         polyunsaturated, dietaryFiber,
-//         monounsaturated, sugars,
-//         trans, protein,
-//         cholesterol,
-//         vitaminA, calcium,
-//         vitaminC, iron;
-
-//       var json = {
-//         title: "",
-//         link: "",
-//         serving: "",
-//         calories: "",
-//         totalFat: "",
-//         saturated: "",
-//         polyunsaturated: "",
-//         monounsaturated: "",
-//         trans: "",
-//         cholesterol: "",
-//         sodium: "",
-//         potassium: "",
-//         totalCarbs: "",
-//         dietaryFiber: "",
-//         sugars: "",
-//         protein: "",
-//         vitaminA: "",
-//         vitaminC: "",
-//         calcium: "",
-//         iron: ""
-//       };
-
-//       link = food.link;
-
-//       var options = {
-//         uri: link,
-//         transform: function (body) {
-//           return cheerio.load(body);
-//         }
-//       };
-
-//       rp(options)
-//         .then(function($){
-//           serving = $('select#food_entry_weight_id').find(":selected").text();
-//           mainTitle = $('h1.main-title').text();
-//           title = mainTitle.substring(13); // for example, mainTitle = "Calories in Pork rice" after scraping, title will only get "Pork rice"
-
-//           var $foodDetails = $('table#nutrition-facts').first();
-//           var $foodDetailsRows = $foodDetails.find('tbody tr');
-
-//           $foodDetailsRows.each(function(index) {
-
-//             // crawling food nutrient details
-
-//             var $rowDetail = $(this).find('td.col-2');
-//             var firstValue = $($rowDetail[0]).text();
-//             var secondValue = $($rowDetail[1]).text();
-
-//             if(index == 0) {
-//               calories = firstValue;
-//               sodium = secondValue;
-
-//             } else if(index == 1) {
-//               totalFat = firstValue;
-//               potassium = secondValue;
-
-//             } else if(index == 2) {
-//               saturated = firstValue;
-//               totalCarbs = secondValue;
-
-//             } else if(index == 3) {
-//               polyunsaturated = firstValue;
-//               dietaryFiber = secondValue;
-
-//             } else if(index == 4) {
-//               monounsaturated = firstValue;
-//               sugars = secondValue;
-
-//             } else if(index == 5) {
-//               trans = firstValue;
-//               protein = secondValue;
-
-//             } else if(index == 6) {
-//               cholesterol = firstValue;
-
-//             } else if(index == 7) {
-//               vitaminA = firstValue;
-//               calcium = secondValue;
-
-//             } else if(index == 8) {
-//               vitaminC = firstValue;
-//               iron = secondValue;
-//             }
-
-//           });
-
-//           json.link = link;
-//           json.title = title;
-//           json.hashCode = helper.hashCode(title);
-//           json.serving = serving;
-//           json.calories = calories;
-//           json.sodium = sodium;
-//           json.totalFat = totalFat;
-//           json.potassium = potassium;
-//           json.saturated = saturated;
-//           json.totalCarbs = totalCarbs;
-//           json.polyunsaturated = polyunsaturated;
-//           json.dietaryFiber = dietaryFiber;
-//           json.monounsaturated = monounsaturated;
-//           json.sugars = sugars;
-//           json.trans = trans;
-//           json.protein = protein;
-//           json.cholesterol = cholesterol;
-//           json.vitaminA = vitaminA;
-//           json.calcium = calcium;
-//           json.vitaminC = vitaminC;
-//           json.iron = iron;
-//           foodListDetails.push(json);
-
-//           foodList[i].traversed = true;
-//           numCrawledFoodDetails++;
-
-//           count++;
-//           if(count > numFoodNeededToCrawl - 1) {
-//             callback(returnCallback);
-//           }
-
-//         })
-
-//         .catch(function(err){
-//           count++;
-//           if(count > numFoodNeededToCrawl - 1) {
-//             callback(returnCallback);
-//           }
-
-//         });
-
-//     }
-//   });
-
-// }
-
-
-
-// /*
-// *  A callback function after crawlFoodList() finishes execution
-// *   If some pages have not been crawled due to bad connections,
-// *   crawlFoodList() will be called again until all pages have been crawled
-// */
-
-// var callbackAfterCrawlFoodDetails = function(returnCallback) {
-//   console.log("Number of Food Details Crawled: " + foodListDetails.length);
-
-//   if(numCrawledFoodDetails > TOTAL_FOODS - 1) {
-//     returnCallback(foodListDetails);
-
-//   } else {
-//     crawlFoodDetails(callbackAfterCrawlFoodDetails, returnCallback);
-//   }
-
-// }
-
-
-// /*
-// *  A callback function after crawlFoodDetails() finishes execution
-// *   If some foods have not been crawled due to bad connections,
-// *   crawlFoodDetails() will be called again until all foods have been crawled
-// */
-
-
-// var callbackAfterCrawlFoodList = function(returnCallback) {
-//   console.log("Number of Pages Crawled: " + numCrawledPages);
-
-//   if(numCrawledPages > TOTAL_PAGES - 1) {
-//     console.log("\nCurrently crawling food details from " + TOTAL_FOODS + " pages");
-//     crawlFoodDetails(callbackAfterCrawlFoodDetails, returnCallback);
-
-//   } else {
-//     crawlFoodList(callbackAfterCrawlFoodList, returnCallback);
-//   }
-
-// }
-
-
-// /*
-// **********************************************************************
-// ************************** Export functions **************************
-// **********************************************************************
-// */
-
-// module.exports = function(returnCallback) {
-
-//   console.log("--------------------------------------------------------\n");
-//   console.log("Crawling food from this website, " + FITNESS_URL + "\n");
-//   console.log("--------------------------------------------------------\n");
-//   console.log("Currently crawling food from " + ENDING_PAGE_INDEX + " pages");
-
-//   init();
-//   crawlFoodList(callbackAfterCrawlFoodList, returnCallback);
-
-// }
-
-
+export {
+  scrapeFoods,
+  getFoodLinksFromPage,
+  getFood
+};
