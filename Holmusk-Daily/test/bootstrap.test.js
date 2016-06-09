@@ -1,20 +1,22 @@
-var sails = require('sails');
+import Sails from 'sails';
+import ElasticSearch from '../search/elasticSearch';
 
-before(function(done) {
+before((done) => {
+  Sails.lift({
+    log: {
+      level: 'error'
+    }
+  }, (err, server) => {
+    if (err)
+      return done(err);
 
-  // Increase the Mocha timeout so that Sails has enough time to lift.
-  this.timeout(20000);
-
-  sails.lift({
-    // configuration for testing purposes
-  }, function(err, server) {
-    if (err) return done(err);
-    // here you can load fixtures, etc.
-    done(err, sails);
+    ElasticSearch.initializeElasticSearch();
+    done(err, Sails);
   });
 });
 
-after(function(done) {
+after((done) => {
   // here you can clear fixtures, etc.
-  sails.lower(done);
+  ElasticSearch.deleteIndex();
+  Sails.lower(done);
 });
