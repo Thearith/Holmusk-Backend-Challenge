@@ -88,10 +88,10 @@ The table's name is `food`.
 
 ## Improvements from previous Submission
 1. Eliminate Javascript async hell callback by using Promises.
-2. Rewrite everything in ES6 syntaxes.
+2. Rewrite everything using ES6 syntax.
 3. Use Webpack and rewrite Frontend in React ES6 class.
 4. Manage 3 databases: one for production, one for development, and one for testing.
-5. Write more tests.
+5. Write more elegant tests by clearing testing databases, setup stub files, etc.
 
 ## Future improvements
 1. Currently elasticsearch can do **Prefix Query** (for example, when we search `Food`, elasticsearch only return titles starting with `Food`. Titles such as `Fast Food` will be ignored). We can improve it by implementing **Partial Word Autocomplete** using NGrams.
