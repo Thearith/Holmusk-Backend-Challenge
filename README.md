@@ -1,6 +1,6 @@
 # Holmusk-Backend-Challenge
 
-Holmusk Daily allows you to search for food and their nutrient details in real time. Visit [http://tinyurl.com/holmusk-daily](http://tinyurl.com/holmusk-daily).
+Holmusk Daily allows you to search for food and their nutrient details in real time.
 
 Holmusk Daily's features include:
 
