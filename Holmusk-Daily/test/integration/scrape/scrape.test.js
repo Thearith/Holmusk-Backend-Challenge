@@ -48,7 +48,8 @@ describe('scrape', function() {
   describe('#getFood()', () => {
     it('should scrape food details from the food url', (done) => {
       const foodUrl = 'http://www.myfitnesspal.com/food/calories/4034';
-      // after taken from the site
+
+      // After taken from the actual url
       const expectedFoodDetails = {
         title: 'Oil, soybean, salad or cooking, (partially hydrogenated)',
         hashCode: 502526504,
