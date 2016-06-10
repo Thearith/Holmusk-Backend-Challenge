@@ -1,5 +1,6 @@
 import RequestPromise from 'request-promise';
-
+import request from 'request';
+import streamify from 'stream-array';
 
 // Constants
 const LOCALHOST               = 'http://localhost:1337';
@@ -48,9 +49,10 @@ function initializeFoodsInDatabase() {
 }
 
 
-// Post foods
+// Post foods, use stream to reduce memory foodprint
 
 function postFoods(foods) {
+
   return new Promise((resolve, reject) => {
     const options = {
       method: 'POST',
@@ -59,11 +61,14 @@ function postFoods(foods) {
       json: true
     };
 
+    // streamify(foods).pipe(
+    //   request(options)
+    //     .on('body', body => console.log(body.msg))
+    //     .on('end', () => resolve())
+    //     .on('error', err => reject(err)));
+
     RequestPromise(options)
-      .then((res) => {
-        console.log(res.msg);
-        resolve();
-      })
+      .then(res => resolve(res.msg))
       .catch(err => reject(err));
   });
 }

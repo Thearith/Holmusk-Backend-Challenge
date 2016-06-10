@@ -14,12 +14,8 @@ import SeedDB from './seed-db.js';
 
 
 // Constants
-const TOTAL_PAGES             = 100;
-const RANGE_SPAN              = 100;
-const NUM_BLOCKS              = TOTAL_PAGES / RANGE_SPAN;
-const START                   = 0;
-const END                     = 1;
-
+const START_PAGE              = 1;
+const END_PAGE                = 100;
 
 
 /*
@@ -28,35 +24,19 @@ const END                     = 1;
 **********************************************************************
 */
 
-function seedRange(startPage, endPage) {
-  return new Promise((resolve, reject) => {
-    scrapeFoods(startPage, endPage)
-      .then((foods) => {
-
-        console.log(`\n\nNow posting ${foods.length} foods to Database and ElasticSearch\n`);
-
-        SeedDB.postFoods(foods)
-          .then(() => resolve())
-          .catch(err => reject(err));
-
-      });
-  });
-}
-
 export default function seed() {
 
   SeedDB.initializeFoodsInDatabase()
     .then(() => {
+      scrapeFoods(START_PAGE, END_PAGE)
+        .then((foods) => {
 
-      // Scrape foods chunk by chunk
-      let rangeList = Array.from({
-        length: NUM_BLOCKS},
-        (v,i) => [ RANGE_SPAN*i + 1, RANGE_SPAN*(i+1) ]);
+          console.log(`\n\nNow posting ${foods.length} foods to Database and ElasticSearch\n`);
 
-      Promise
-        .all(rangeList.map(range => seedRange(range[START], range[END])))
-        .then(() => console.log(`\n-----> FINISHED`))
-        .catch(err => console.log(err));
+          SeedDB.postFoods(foods)
+            .then((msg) => console.log(msg))
+            .catch(err => console.log(err));
+        });
     })
     .catch(err => console.log(err));
 }
